@@ -17,8 +17,12 @@
     "express": "^4.18.2",
     "express-session": "^1.17.3",
     "nodemon": "^2.0.20",
+    "pg": "^8.9.0",
+    "pg-hstore": "^2.3.4",
     "pg-promise": "^11.2.0",
     "popper.js": "^1.16.1",
+    "sequelize": "^6.28.2",
+    "sequelize-auto": "^0.8.8",
     "validate": "^5.2.0"
   }
 }
