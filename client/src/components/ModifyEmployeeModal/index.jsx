@@ -10,15 +10,17 @@ const ModifyEmployeeModal = ({ modifyEmployeeModalOpen, onHide, edit, id }) => {
 	const [age, setAge] = useState('')
 	const [departmentId, setDepartmentId] = useState('')
 	const [salary, setSalary] = useState('')
+	const [file, setFile] = useState()
 	const revalidator = useRevalidator()
-	const [error, setError] = useState(null)
+	const [error, setError] = useState()
 
 	const clearData = () => {
 		setName('')
-		setError('')
+		setError(null)
 		setAge('')
 		setDepartmentId('')
 		setSalary('')
+		setFile(null)
 	}
 
 	const handleHide = () => {
@@ -27,13 +29,10 @@ const ModifyEmployeeModal = ({ modifyEmployeeModalOpen, onHide, edit, id }) => {
 	}
 
 	const submitHandler = async () => {
-		const params = {
-			name,
-			age: +age || null,
-			salary: +salary || null,
-			departmentId: +departmentId || null
-		}
-		const res = edit ? await editEmployee(id, params) : await addEmployee(params)
+		const formData = new FormData()
+		Object.entries({ name, file, age, salary, departmentId }).forEach(([key, value]) => formData.append(key, value))
+
+		const res = edit ? await editEmployee(id, formData) : await addEmployee(formData)
 		if (typeof res !== 'string' && 'error' in res) {
 			setError(res.response)
 			return
@@ -47,11 +46,11 @@ const ModifyEmployeeModal = ({ modifyEmployeeModalOpen, onHide, edit, id }) => {
 		if (edit) {
 			(async () => {
 				const data = await getEmployee(id)
-				const { name, age, salary, department_id } = data[0]
+				const { name, age, salary, departmentId } = data
 				setName(name)
 				setAge(age)
 				setAge(age)
-				setDepartmentId(department_id)
+				setDepartmentId(departmentId)
 				setSalary(salary)
 			})()
 		}
@@ -80,12 +79,19 @@ const ModifyEmployeeModal = ({ modifyEmployeeModalOpen, onHide, edit, id }) => {
 				<FormLabel>Salary</FormLabel>
 				<Input type="number" required value={salary} onChange={e => setSalary(e.target.value)} />
 			</FormControl>
-			{error &&
-				error.map(message => (
+			<FormControl>
+				<FormLabel>Picture</FormLabel>
+				<Input type="file" onChange={e => setFile(e.target.files[0])} />
+			</FormControl>
+			{typeof error === 'string' ? (
+				<Alert severity="error">{error}</Alert>
+			) : (
+				error?.map(message => (
 					<Alert key={message} severity="error">
 						{message}
 					</Alert>
-				))}
+				))
+			)}
 		</Modal>
 	)
 }

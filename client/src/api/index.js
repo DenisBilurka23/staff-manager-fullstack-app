@@ -5,13 +5,13 @@ export const api = axios.create({
 	baseURL: process.env.REACT_APP_API_ROOT
 })
 
-export const GET_THUNK = async (url, thunkApi) => {
+export const GET_THUNK = async url => {
 	try {
 		const res = await api.get(url)
 		return res.data
 	} catch (e) {
 		console.log('e')
-		return thunkApi.rejectWithValue(e.message)
+		// return thunkApi.rejectWithValue(e.message)
 	}
 }
 

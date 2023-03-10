@@ -8,11 +8,11 @@ import { addDepartment, editDepartment, getDepartment } from '../../api/departme
 const ModifyDepartmentModal = ({ modifyDepartmentModalOpen, onHide, edit, id }) => {
 	const [name, setName] = useState('')
 	const revalidator = useRevalidator()
-	const [error, setError] = useState(null)
+	const [error, setError] = useState()
 
 	const clearData = () => {
 		setName('')
-		setError('')
+		setError(null)
 	}
 
 	const handleHide = () => {
@@ -35,8 +35,7 @@ const ModifyDepartmentModal = ({ modifyDepartmentModalOpen, onHide, edit, id }) 
 		if (edit) {
 			(async () => {
 				const data = await getDepartment(id)
-				const { name } = data[0]
-				setName(name)
+				setName(data.name)
 			})()
 		}
 	}, [modifyDepartmentModalOpen])
@@ -47,12 +46,15 @@ const ModifyDepartmentModal = ({ modifyDepartmentModalOpen, onHide, edit, id }) 
 				<FormLabel>Name</FormLabel>
 				<Input value={name} onChange={e => setName(e.target.value)} autoFocus required />
 			</FormControl>
-			{error &&
-				error.map(message => (
+			{typeof error === 'string' ? (
+				<Alert severity="error">{error}</Alert>
+			) : (
+				error?.map(message => (
 					<Alert key={message} severity="error">
 						{message}
 					</Alert>
-				))}
+				))
+			)}
 		</Modal>
 	)
 }

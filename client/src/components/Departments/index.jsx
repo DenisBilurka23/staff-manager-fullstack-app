@@ -25,7 +25,7 @@ const Departments = () => {
 	const handleDeleteDepartment = async () => {
 		try {
 			await deleteDepartment(selected)
-			setSelected([])
+			setSelected(null)
 		} catch (e) {
 			console.log(e)
 		}
@@ -42,10 +42,9 @@ const Departments = () => {
 				<Table
 					selected={selected}
 					setSelected={setSelected}
-					titles={['ID', 'Name']}
+					titles={['ID', 'Name', 'Created', 'Updated', 'Available employees']}
 					data={data}
 					styles={{ marginBottom: '1rem' }}
-					name="department"
 					onEdit={handleModifyDepartment(true)}
 					onAdd={handleModifyDepartment(false)}
 					onDelete={handleDeleteModalOpen}

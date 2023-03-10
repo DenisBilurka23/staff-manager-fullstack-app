@@ -38,7 +38,7 @@ const Employees = () => {
 					Employees
 				</Typography>
 				<Table
-					titles={['ID', 'Name', 'Age', 'Salary', 'Department ID', 'Date created']}
+					titles={['ID', 'Name', 'Age', 'Department ID', 'Salary', 'Created', 'Updated']}
 					data={data}
 					styles={{ marginBottom: '1rem' }}
 					name="employee"

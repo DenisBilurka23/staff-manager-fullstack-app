@@ -15,7 +15,7 @@ const TableContainer = styled(MuiTableContainer)(({ styles }) => ({
 	...styles
 }))
 
-const Table = ({ selected, setSelected, titles, data, styles, selectable = true, name, onEdit, onAdd, onDelete }) => {
+const Table = ({ selected, setSelected, titles, data, styles, selectable = true, onEdit, onAdd, onDelete }) => {
 	const handleClick = (event, name) => {
 		if (!selectable) {
 			return
@@ -36,31 +36,33 @@ const Table = ({ selected, setSelected, titles, data, styles, selectable = true,
 						))}
 					</TableRow>
 				</TableHead>
-				<TableBody>
-					{data?.map(dataCell => {
-						const isItemSelected = selected === dataCell[`${name}_id`]
-						return (
-							<TableRow
-								hover={selectable}
-								key={Object.values(dataCell)[0] + Math.random()}
-								sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-								selected={selectable && isItemSelected}
-								onClick={event => handleClick(event, dataCell[`${name}_id`])}
-							>
-								{selectable && (
-									<TableCell padding="checkbox">
-										<Checkbox color="primary" checked={isItemSelected} />
-									</TableCell>
-								)}
-								{Object.values(dataCell).map(cellValue => (
-									<TableCell key={cellValue + Math.random()} component="th" scope="row" align="center">
-										{cellValue}
-									</TableCell>
-								))}
-							</TableRow>
-						)
-					})}
-				</TableBody>
+				{data && (
+					<TableBody>
+						{data.map(dataCell => {
+							const isItemSelected = selected === dataCell.id
+							return (
+								<TableRow
+									hover={selectable}
+									key={Object.values(dataCell)[0] + Math.random()}
+									sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+									selected={selectable && isItemSelected}
+									onClick={event => handleClick(event, dataCell[`id`])}
+								>
+									{selectable && (
+										<TableCell padding="checkbox">
+											<Checkbox color="primary" checked={isItemSelected} />
+										</TableCell>
+									)}
+									{Object.values(dataCell).map(cellValue => (
+										<TableCell key={cellValue + Math.random()} component="th" scope="row" align="center">
+											{Array.isArray(cellValue) ? cellValue.length : cellValue}
+										</TableCell>
+									))}
+								</TableRow>
+							)
+						})}
+					</TableBody>
+				)}
 			</MuiTable>
 			{selectable && <ModifyTable selected={selected} onEdit={onEdit} onDelete={onDelete} onAdd={onAdd} />}
 		</TableContainer>

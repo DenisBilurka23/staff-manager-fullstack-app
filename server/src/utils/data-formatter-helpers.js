@@ -1,6 +1,9 @@
 import dayjs from "dayjs";
 
-export const formatDataTime = (data) => data.map(user => ({
+export const formatDataTime = (data) => {
+  return data.map((user) => ({
     ...user,
-    date_created: dayjs(user.date_created).format('DD.MM.YYYY HH:mm')
-}))
+    createdAt: dayjs(user.createdAt).format("DD.MM.YYYY HH:mm"),
+    updatedAt: dayjs(user.updatedAt).format("DD.MM.YYYY HH:mm"),
+  }));
+};

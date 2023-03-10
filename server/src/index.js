@@ -1,9 +1,9 @@
 import express from "express";
-import path from "path";
 import url from "url";
 import session from "express-session";
 import pgp from "pg-promise";
 import cors from "cors";
+import path from "path";
 
 import employeesRouter from "./routes/employee-routes.js";
 import mainRouter from "./routes/main-routes.js";
@@ -25,14 +25,11 @@ const corsOptions = {
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
-const applyLocals = (req, res, next) => {
-  res.locals.auth = !!req.session.user;
-  next();
-};
+global.__basepath = __dirname;
 
 app.use(bodyParserUrlencoded);
 app.use(bodyParserJson);
-app.use("/public", express.static(path.join(__dirname, "static")));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(
   session({
     secret: "keyboard cat",
@@ -48,10 +45,6 @@ app.use("/employees", employeesRouter);
 app.use("/users", usersRouter);
 app.use("/departments", departmentsRouter);
 app.use("/", authRouter);
-app.use(applyLocals);
-app.use("/css", express.static(path.join("./node_modules/bootstrap/dist/css")));
-app.use("/js", express.static(path.join("./node_modules/bootstrap/dist/js")));
-app.use("/js", express.static(path.join("./node_modules/jquery/dist")));
 
 app.listen(port, () => {
   console.log(`Server is started on port ${port}`);
