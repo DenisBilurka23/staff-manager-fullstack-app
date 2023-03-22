@@ -1,18 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Container, Typography } from '@mui/material'
-import { useNavigation, useLoaderData } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 
 import Table from '../../patterns/Table'
 import ModifyDepartmentModal from '../ModifyDepartmentModal'
 import DeleteModal from '../DeleteModal'
 import { deleteDepartment } from '../../api/departments'
+import { fetchDepartments } from '../../store/reducers/actionCreators'
 
 const Departments = () => {
+	const dispatch = useDispatch()
 	const [selected, setSelected] = useState(null)
 	const [modifyDepartmentModalOpen, setModifyDepartmentModalOpen] = useState(false)
 	const [deleteDepartmentModalOpen, setDeleteDepartmentModalOpen] = useState(false)
-	const data = useLoaderData()?.payload
-	const dataState = useNavigation()
+	const { departments, loading } = useSelector(state => state.departments)
 	const [edit, setEdit] = useState(false)
 
 	const handleModifyDepartmentModal = () => setModifyDepartmentModalOpen(prev => !prev)
@@ -33,6 +34,10 @@ const Departments = () => {
 
 	const handleDeleteModalOpen = () => setDeleteDepartmentModalOpen(prev => !prev)
 
+	useEffect(() => {
+		dispatch(fetchDepartments())
+	}, [])
+
 	return (
 		<>
 			<Container sx={{ display: 'flex', flexDirection: 'column', marginBottom: '1rem' }}>
@@ -43,13 +48,13 @@ const Departments = () => {
 					selected={selected}
 					setSelected={setSelected}
 					titles={['ID', 'Name', 'Created', 'Updated', 'Available employees']}
-					data={data}
+					data={departments}
 					styles={{ marginBottom: '1rem' }}
 					onEdit={handleModifyDepartment(true)}
 					onAdd={handleModifyDepartment(false)}
 					onDelete={handleDeleteModalOpen}
 				/>
-				{dataState.state === 'loading' && <span>Loading...</span>}
+				{loading && <span>Loading...</span>}
 			</Container>
 			<ModifyDepartmentModal
 				edit={edit}

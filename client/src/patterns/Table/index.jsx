@@ -36,33 +36,40 @@ const Table = ({ selected, setSelected, titles, data, styles, selectable = true,
 						))}
 					</TableRow>
 				</TableHead>
-				{data && (
-					<TableBody>
-						{data.map(dataCell => {
-							const isItemSelected = selected === dataCell.id
-							return (
-								<TableRow
-									hover={selectable}
-									key={Object.values(dataCell)[0] + Math.random()}
-									sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-									selected={selectable && isItemSelected}
-									onClick={event => handleClick(event, dataCell[`id`])}
-								>
-									{selectable && (
-										<TableCell padding="checkbox">
-											<Checkbox color="primary" checked={isItemSelected} />
-										</TableCell>
-									)}
-									{Object.values(dataCell).map(cellValue => (
+				<TableBody>
+					{data?.map(dataCell => {
+						const isItemSelected = selected === dataCell.id
+						return (
+							<TableRow
+								hover={selectable}
+								key={Object.values(dataCell)[0] + Math.random()}
+								sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+								selected={selectable && isItemSelected}
+								onClick={event => handleClick(event, dataCell[`id`])}
+							>
+								{selectable && (
+									<TableCell padding="checkbox">
+										<Checkbox color="primary" checked={isItemSelected} />
+									</TableCell>
+								)}
+								{Object.values(dataCell).map(cellValue => {
+									let value = cellValue
+									if (Array.isArray(cellValue)) {
+										value = cellValue.length
+									}
+									if (typeof cellValue === 'boolean') {
+										value = cellValue ? '+' : '-'
+									}
+									return (
 										<TableCell key={cellValue + Math.random()} component="th" scope="row" align="center">
-											{Array.isArray(cellValue) ? cellValue.length : cellValue}
+											{value}
 										</TableCell>
-									))}
-								</TableRow>
-							)
-						})}
-					</TableBody>
-				)}
+									)
+								})}
+							</TableRow>
+						)
+					})}
+				</TableBody>
 			</MuiTable>
 			{selectable && <ModifyTable selected={selected} onEdit={onEdit} onDelete={onDelete} onAdd={onAdd} />}
 		</TableContainer>

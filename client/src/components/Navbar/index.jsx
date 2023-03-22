@@ -1,23 +1,34 @@
 import * as React from 'react'
 import MenuIcon from '@mui/icons-material/Menu'
-import {
-	AppBar,
-	Avatar,
-	Box,
-	Container,
-	IconButton,
-	Link,
-	Menu,
-	MenuItem,
-	Toolbar,
-	Tooltip,
-	Typography
-} from '@mui/material'
+import { AppBar, Box, Container, IconButton, Menu, MenuItem, styled, Toolbar, Tooltip, Typography } from '@mui/material'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useNavigate } from 'react-router-dom'
 
-const pages = ['Home', 'Users', 'Employees', 'Departments']
-const settings = ['Profile', 'Logout']
+import { logout } from '../../store/reducers/actionCreators'
+
+const LinkStyled = styled(Link, { shouldForwardProp: prop => prop !== 'mobile' })(({ mobile }) => ({
+	display: 'block',
+	textDecoration: 'none',
+	color: mobile ? '#FFF' : '#000',
+	margin: '0.25rem'
+}))
 
 const ResponsiveAppBar = () => {
+	const dispatch = useDispatch()
+	const navigate = useNavigate()
+	const user = useSelector(state => state.auth.user)
+	const pages = user
+		? {
+				labels: ['Users', 'Employees', 'Departments'],
+				links: ['/', 'Employees', 'Departments']
+				// eslint-disable-next-line no-mixed-spaces-and-tabs
+		  }
+		: {
+				labels: ['Sign In', 'Sign Up'],
+				links: ['sign-in', 'sign-up']
+				// eslint-disable-next-line no-mixed-spaces-and-tabs
+		  }
+	const settings = ['Profile', 'Logout']
 	const [anchorElNav, setAnchorElNav] = React.useState(null)
 	const [anchorElUser, setAnchorElUser] = React.useState(null)
 
@@ -27,7 +38,18 @@ const ResponsiveAppBar = () => {
 
 	const handleCloseNavMenu = () => setAnchorElNav(null)
 
-	const handleCloseUserMenu = () => setAnchorElUser(null)
+	const handleCloseUserMenu = async setting => {
+		setAnchorElUser(null)
+		if (setting === 'Logout') {
+			const res = await dispatch(logout())
+			if (!('error' in res)) {
+				navigate('/sign-in')
+			}
+		}
+		if (setting === 'Profile') {
+			navigate('/profile')
+		}
+	}
 
 	return (
 		<AppBar position="static">
@@ -79,17 +101,11 @@ const ResponsiveAppBar = () => {
 								display: { xs: 'block', md: 'none' }
 							}}
 						>
-							{pages.map(page => (
+							{pages.links.map((page, inx) => (
 								<MenuItem key={page} display="block" sx={{ display: 'block' }}>
-									<Link
-										m="0.25rem"
-										href={page === 'Home' ? '/' : page.toLowerCase()}
-										key={page}
-										onClick={handleCloseNavMenu}
-										sx={{ display: 'block', textDecoration: 'none' }}
-									>
-										{page}
-									</Link>
+									<LinkStyled to={page} key={page} onClick={handleCloseNavMenu}>
+										{pages.labels[inx]}
+									</LinkStyled>
 								</MenuItem>
 							))}
 						</Menu>
@@ -113,48 +129,43 @@ const ResponsiveAppBar = () => {
 						Staff Manager
 					</Typography>
 					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-						{pages.map(page => (
-							<Link
-								m="0.25rem"
-								href={page === 'Home' ? '/' : page.toLowerCase()}
-								key={page}
-								onClick={handleCloseNavMenu}
-								sx={{ my: 2, color: 'white', display: 'block' }}
-							>
-								{page}
-							</Link>
+						{pages.links.map((page, inx) => (
+							<LinkStyled mobile to={page} key={page} onClick={handleCloseNavMenu}>
+								{pages.labels[inx]}
+							</LinkStyled>
 						))}
 					</Box>
-
-					<Box sx={{ flexGrow: 0 }}>
-						<Tooltip title="Open settings">
-							<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-								<Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-							</IconButton>
-						</Tooltip>
-						<Menu
-							sx={{ mt: '45px' }}
-							id="menu-appbar"
-							anchorEl={anchorElUser}
-							anchorOrigin={{
-								vertical: 'top',
-								horizontal: 'right'
-							}}
-							keepMounted
-							transformOrigin={{
-								vertical: 'top',
-								horizontal: 'right'
-							}}
-							open={Boolean(anchorElUser)}
-							onClose={handleCloseUserMenu}
-						>
-							{settings.map(setting => (
-								<MenuItem key={setting} onClick={handleCloseUserMenu}>
-									<Typography textAlign="center">{setting}</Typography>
-								</MenuItem>
-							))}
-						</Menu>
-					</Box>
+					{user && (
+						<Box sx={{ flexGrow: 0 }}>
+							<Tooltip title="Open settings">
+								<IconButton onClick={handleOpenUserMenu} sx={{ width: '3rem', height: '3rem', color: '#FFF' }}>
+									{user.email[0].toUpperCase()}
+								</IconButton>
+							</Tooltip>
+							<Menu
+								sx={{ mt: '45px' }}
+								id="menu-appbar"
+								anchorEl={anchorElUser}
+								anchorOrigin={{
+									vertical: 'top',
+									horizontal: 'right'
+								}}
+								keepMounted
+								transformOrigin={{
+									vertical: 'top',
+									horizontal: 'right'
+								}}
+								open={Boolean(anchorElUser)}
+								onClose={handleCloseUserMenu}
+							>
+								{settings?.map(setting => (
+									<MenuItem key={setting} id={setting} onClick={() => handleCloseUserMenu(setting)}>
+										<Typography textAlign="center">{setting}</Typography>
+									</MenuItem>
+								))}
+							</Menu>
+						</Box>
+					)}
 				</Toolbar>
 			</Container>
 		</AppBar>

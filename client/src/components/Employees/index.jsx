@@ -1,24 +1,29 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Container, Typography } from '@mui/material'
-import { useNavigation, useLoaderData } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 
 import Table from '../../patterns/Table'
 import ModifyEmployeeModal from '../ModifyEmployeeModal'
 import DeleteModal from '../DeleteModal'
 import { deleteEmployee } from '../../api/employees'
+import { fetchEmployees } from '../../store/reducers/actionCreators'
 
 const Employees = () => {
+	const dispatch = useDispatch()
 	const [selected, setSelected] = useState(null)
 	const [modifyEmployeeModalOpen, setModifyEmployeeModalOpen] = useState(false)
 	const [deleteEmployeeModalOpen, setDeleteEmployeeModalOpen] = useState(false)
 	const [edit, setEdit] = useState(false)
-	const data = useLoaderData()?.payload
-	const dataState = useNavigation()
+	const { employees, loading } = useSelector(state => state.employees)
 
 	const handleModifyEmployee = edit => () => {
 		setEdit(edit)
 		setModifyEmployeeModalOpen(prev => !prev)
 	}
+
+	useEffect(() => {
+		dispatch(fetchEmployees())
+	}, [])
 
 	const handleDeleteEmployee = async () => {
 		try {
@@ -39,7 +44,7 @@ const Employees = () => {
 				</Typography>
 				<Table
 					titles={['ID', 'Name', 'Age', 'Department ID', 'Salary', 'Created', 'Updated']}
-					data={data}
+					data={employees}
 					styles={{ marginBottom: '1rem' }}
 					name="employee"
 					onAdd={handleModifyEmployee(false)}
@@ -48,7 +53,7 @@ const Employees = () => {
 					selected={selected}
 					setSelected={setSelected}
 				/>
-				{dataState.state === 'loading' && <span>Loading...</span>}
+				{loading && <span>Loading...</span>}
 			</Container>
 			<ModifyEmployeeModal
 				modifyEmployeeModalOpen={modifyEmployeeModalOpen}

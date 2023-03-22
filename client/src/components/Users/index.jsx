@@ -1,11 +1,17 @@
 import { Container, Typography } from '@mui/material'
-import { useNavigation, useLoaderData } from 'react-router-dom'
 
 import Table from '../../patterns/Table'
+import { useEffect } from 'react'
+import { fetchUsers } from '../../store/reducers/actionCreators'
+import { useDispatch, useSelector } from 'react-redux'
 
 const Users = () => {
-	const data = useLoaderData()?.payload
-	const dataState = useNavigation()
+	const dispatch = useDispatch()
+	const { users, loading } = useSelector(state => state.users)
+	
+	useEffect(() => {
+		dispatch(fetchUsers())
+	}, [])
 
 	return (
 		<>
@@ -13,11 +19,11 @@ const Users = () => {
 				<Typography sx={{ fontSize: '2rem', fontWeight: 300, textAlign: 'center', margin: '1rem' }}>Users</Typography>
 				<Table
 					selectable={false}
-					titles={['ID', 'Name', 'Date created']}
-					data={data}
+					titles={['Email', 'ID', 'Activated', 'Created', 'Updated']}
+					data={users}
 					styles={{ marginBottom: '1rem' }}
 				/>
-				{dataState.state === 'loading' && <span>Loading...</span>}
+				{loading && <span>Loading...</span>}
 			</Container>
 		</>
 	)

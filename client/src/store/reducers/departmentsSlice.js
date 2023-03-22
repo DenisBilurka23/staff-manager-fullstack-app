@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit'
 import { fetchDepartments } from './actionCreators'
 
 const initialState = {
-	users: null,
+	departments: null,
+	loading: false,
 	error: null
 }
 
@@ -10,11 +11,16 @@ export const departmentsSlice = createSlice({
 	name: 'users',
 	initialState,
 	extraReducers: {
-		[fetchDepartments.fulfilled.type]: (state, action) => {
-			state.employees = action.payload
+		[fetchDepartments.pending.type]: state => {
+			state.loading = true
 		},
-		[fetchDepartments.rejected]: (state, action) => {
+		[fetchDepartments.fulfilled.type]: (state, action) => {
+			state.departments = action.payload
+			state.loading = false
+		},
+		[fetchDepartments.rejected.type]: (state, action) => {
 			state.error = action.payload
+			state.loading = false
 		}
 	}
 })

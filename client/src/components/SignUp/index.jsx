@@ -1,12 +1,22 @@
+import { useDispatch, useSelector } from 'react-redux'
+
 import Auth from '../../patterns/Auth'
+import { signUp } from '../../store/reducers/actionCreators'
+import { useNavigate } from 'react-router-dom'
 
 const SignUp = () => {
-	const handleLogin = async params => {
-		console.log('params: ', params)
-		// await axios.post('sign-in', params)
+	const dispatch = useDispatch()
+	const errors = useSelector(state => state.auth.errors)
+	const navigate = useNavigate()
+
+	const handleSubmit = async params => {
+		const res = await dispatch(signUp(params))
+		if (!('error' in res)) {
+			navigate('/sign-in')
+		}
 	}
 
-	return <Auth name="Sign up" cb={handleLogin} />
+	return <Auth errors={errors} name="Sign up" cb={handleSubmit} />
 }
 
 export default SignUp

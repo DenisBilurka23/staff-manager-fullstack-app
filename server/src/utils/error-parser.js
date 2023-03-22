@@ -1,1 +1,4 @@
-export const parseErrors = (errors) => errors.map((error) => error.message);
+export const parseErrors = (errors) => {
+  const parsedErrors = errors.map((error) => error.message);
+  return parsedErrors?.length ? parsedErrors : null;
+};

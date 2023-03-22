@@ -2,29 +2,36 @@ import { createBrowserRouter, createRoutesFromElements, RouterProvider, Route } 
 
 import Layout from './components/Layout'
 import Employees from './components/Employees'
-import Home from './components/Home'
 import SignUp from './components/SignUp'
 import SignIn from './components/SignIn'
-import { fetchDepartments, fetchEmployees, fetchUsers } from './store/reducers/actionCreators'
+import { refreshToken } from './store/reducers/actionCreators'
 import { useDispatch } from 'react-redux'
 import Users from './components/Users'
 import Departments from './components/Departments'
+import { useEffect } from 'react'
+import PrivateRoutes from './components/PrivateRoutes'
+import Profile from './components/Profile'
 
 const App = () => {
 	const dispatch = useDispatch()
-	const getEmployeesHandler = () => dispatch(fetchEmployees())
-	const getUsersHandler = () => dispatch(fetchUsers())
-	const getDepartmentsHandler = () => dispatch(fetchDepartments())
+
+	useEffect(() => {
+		if (localStorage.getItem('token')) {
+			dispatch(refreshToken())
+		}
+	}, [])
 
 	const router = createBrowserRouter(
 		createRoutesFromElements(
 			<Route to="/" element={<Layout />}>
 				<Route path="/sign-in" element={<SignIn />} />
 				<Route path="/sign-up" element={<SignUp />} />
-				<Route index element={<Home />} />
-				<Route path="/employees" element={<Employees />} loader={getEmployeesHandler} />
-				<Route path="/users" element={<Users />} loader={getUsersHandler} />
-				<Route path="/departments" element={<Departments />} loader={getDepartmentsHandler} />
+				<Route element={<PrivateRoutes auth={!!localStorage.getItem('token')} />}>
+					<Route index element={<Users />} />
+					<Route path="/employees" element={<Employees />} />
+					<Route path="/departments" element={<Departments />} />
+					<Route path="/profile" element={<Profile />} />
+				</Route>
 			</Route>
 		)
 	)

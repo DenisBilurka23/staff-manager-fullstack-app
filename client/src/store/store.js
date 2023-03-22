@@ -1,12 +1,14 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import employeesSlice from './reducers/employeesSlice'
-import usersSlice from './reducers/usersSlice'
-import departmentsSlice from './reducers/departmentsSlice'
+import employees from './reducers/employeesSlice'
+import users from './reducers/usersSlice'
+import departments from './reducers/departmentsSlice'
+import auth from './reducers/authSlice'
 
 const rootReducer = combineReducers({
-	employeesSlice,
-	usersSlice,
-	departmentsSlice
+	employees,
+	users,
+	departments,
+	auth
 })
 
 export const setupStore = () => {
